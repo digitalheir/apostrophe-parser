@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParenParser {
+public class ParenthesisParser {
     final static NonTerminal sentence = NonTerminal.of("S");
     final static NonTerminal openingQuote = NonTerminal.of("['");
     final static NonTerminal closingQuote = NonTerminal.of("']");

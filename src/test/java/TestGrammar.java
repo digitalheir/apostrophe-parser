@@ -1,4 +1,4 @@
-import com.github.digitalheir.ParenParser;
+import com.github.digitalheir.ParenthesisParser;
 import com.github.digitalheir.WordWithContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.List;
 public class TestGrammar {
     @Test
     public void testTokenizer() {
-        final List<Token<WordWithContext>> l = ParenParser.tokenize("a.  bCd,");
+        final List<Token<WordWithContext>> l = ParenthesisParser.tokenize("a.  bCd,");
 
         final List<Token<WordWithContext>> expected = Arrays.asList(
                new Token<>(new WordWithContext("a", null, null)),
@@ -34,8 +34,8 @@ public class TestGrammar {
 
     @Test
     public void testCases() {
-        System.out.println(ParenParser.parse(" 'ok',"));
-        System.out.println(ParenParser.parse("'ok'"));
-        System.out.println(ParenParser.parse("'ok',"));
+        System.out.println(ParenthesisParser.parse("'ok'"));
+        System.out.println(ParenthesisParser.parse("'ok',"));
+        System.out.println(ParenthesisParser.parse(" 'ok',"));
     }
 }
