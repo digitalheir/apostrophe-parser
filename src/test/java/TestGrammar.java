@@ -35,7 +35,7 @@ public class TestGrammar {
     }
 
     @Test
-    public void convertToFancyParenthesis() {
+    public void convertToFancyQuotes() {
         Assertions.assertEquals(
                 "‘Hello, I'm here’, she said.",
                 ParenthesisParser.convertToFancyQuotes("'Hello, I'm here', she said.")
