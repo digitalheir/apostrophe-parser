@@ -1,5 +1,6 @@
 package com.github.digitalheir;
 
+import org.leibnizcenter.cfg.category.Category;
 import org.leibnizcenter.cfg.category.nonterminal.NonTerminal;
 import org.leibnizcenter.cfg.category.terminal.Terminal;
 import org.leibnizcenter.cfg.earleyparser.ParseTree;
@@ -7,29 +8,39 @@ import org.leibnizcenter.cfg.earleyparser.Parser;
 import org.leibnizcenter.cfg.grammar.Grammar;
 import org.leibnizcenter.cfg.token.Token;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.github.digitalheir.tokenizer.Tokenizer.tokenize;
 
 public class ParenthesisParser {
     final static NonTerminal sentence = NonTerminal.of("S");
-    final static NonTerminal openingQuote = NonTerminal.of("['");
-    final static NonTerminal closingQuote = NonTerminal.of("']");
+    final static NonTerminal openingQuote = NonTerminal.of("Opening quote");
+    final static NonTerminal closingQuote = NonTerminal.of("Closing quote");
 
-    final static Terminal<WordWithContext> anySingleQuote = new SingleQuoteTerminal();
-    final static Terminal<WordWithContext> singleQuoteAfterSpace = new SpaceQuoteTerminal();
-    final static Terminal<WordWithContext> singleQuoteBeforeComma = new CommaQuoteTerminal();
+    final static Terminal<SubStringWithContext> anySingleQuote = new SingleQuoteTerminal();
+    final static Terminal<SubStringWithContext> singleQuoteAfterSpace = new SpaceQuoteTerminal();
+    final static Terminal<SubStringWithContext> singleQuoteBeforeComma = new CommaQuoteTerminal();
+
+    final static Terminal<SubStringWithContext> singleParenthesisPartOfKnownPattern = new SingleParenthesisThatsPartOfAKnownParenthesisPattern();
 
     final static AnyTextTerminal textLiteral = new AnyTextTerminal();
 
-    final static Grammar<WordWithContext> gram = new Grammar.Builder<WordWithContext>()
-            .addRule(0.999, sentence,
+    // Take care that all probabilities for Non-Terminals should add up to <= 1.0!
+    final static Grammar<SubStringWithContext> gram = new Grammar.Builder<SubStringWithContext>()
+            // Opening and closing parenthesis is kind of salient, so the probability should be a little high
+            .addRule(0.399, sentence,
                     openingQuote, sentence, closingQuote)
+
+            // These probabilities can be very low, because they are sort of fallback
             .addRule(0.00099, sentence,
                     sentence, sentence)
             .addRule(0.00001, sentence,
                     textLiteral)
+
+            // Known contractions are very likely to not be a opening or closing quote
+            .addRule(0.6, sentence,
+                    singleParenthesisPartOfKnownPattern)
+
 
             // Rules for opening
             .addRule(0.4, openingQuote,
@@ -45,30 +56,43 @@ public class ParenthesisParser {
 
             .build();
 
-    private static final Pattern tokenPattern = Pattern.compile("[a-z]+|.", Pattern.CASE_INSENSITIVE);
-
-    public static List<Token<WordWithContext>> tokenize(String str) {
-        final Matcher m = tokenPattern.matcher(str);
-        final List<String> allTokens = new ArrayList<>();
-        while (m.find()) {
-            allTokens.add(m.group());
-        }
-
-
-        final List<Token<WordWithContext>> myTokens = new ArrayList<>(allTokens.size());
-        WordWithContext lastWord = null;
-        for (final String word : allTokens) {
-            final WordWithContext wordWithContext = new WordWithContext(word, lastWord, null);
-            myTokens.add(new Token<>(wordWithContext));
-            if (lastWord != null) lastWord.next = wordWithContext;
-            lastWord = wordWithContext;
-        }
-
-        return myTokens;
-    }
 
     public static ParseTree parse(String str) {
-        return new Parser<>(gram).getViterbiParse(sentence, tokenize(str));
+        final List<Token<SubStringWithContext>> tokens = tokenizeAndPreprocess(str);
+        return new Parser<>(gram).getViterbiParse(sentence, tokens);
     }
 
+    private static List<Token<SubStringWithContext>> tokenizeAndPreprocess(String str) {
+        final List<Token<SubStringWithContext>> tokens = tokenize(str);
+        for (final Token<SubStringWithContext> token : tokens) {
+            token.obj.tagIfNotAlreadyTagged();
+        }
+        return tokens;
+    }
+
+    public static String convertToFancyQuotes(String str) {
+        final ParseTree parseTree = parse(str);
+        final StringBuilder sb = new StringBuilder(str.length());
+        convertToFancyQuotes(parseTree, sb);
+        return sb.toString();
+    }
+
+    private static void convertToFancyQuotes(ParseTree parseTree, StringBuilder sb) {
+        if (parseTree instanceof ParseTree.Token) {
+            final String literal = ((SubStringWithContext) ((ParseTree.Token<?>) parseTree).token.obj).str;
+            sb.append(literal);
+        } else {
+            final List<ParseTree> children = parseTree.children;
+            if (children != null) for (ParseTree childNode : children) {
+                final Category category = childNode.category;
+                if (category == openingQuote) {
+                    sb.append("‘");
+                } else if (category == closingQuote) {
+                    sb.append("’");
+                } else {
+                    convertToFancyQuotes(childNode, sb);
+                }
+            }
+        }
+    }
 }

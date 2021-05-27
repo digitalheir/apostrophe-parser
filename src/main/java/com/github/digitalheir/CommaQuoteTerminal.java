@@ -4,12 +4,12 @@ import org.leibnizcenter.cfg.token.Token;
 
 public class CommaQuoteTerminal extends SingleQuoteTerminal {
     @Override
-    public boolean hasCategory(Token<WordWithContext> token) {
+    public boolean hasCategory(Token<SubStringWithContext> token) {
         return super.hasCategory(token) && isComma(token.obj.next);
     }
 
-    private boolean isComma(WordWithContext w) {
-        return w != null && w.word.equals(",");
+    private boolean isComma(SubStringWithContext w) {
+        return w != null && w.str.equals(",");
     }
 
     @Override

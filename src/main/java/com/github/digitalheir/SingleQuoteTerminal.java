@@ -3,10 +3,10 @@ package com.github.digitalheir;
 import org.leibnizcenter.cfg.category.terminal.Terminal;
 import org.leibnizcenter.cfg.token.Token;
 
-public class SingleQuoteTerminal implements Terminal<WordWithContext> {
+public class SingleQuoteTerminal implements Terminal<SubStringWithContext> {
     @Override
-    public boolean hasCategory(Token<WordWithContext> token) {
-        return token.obj.word.equals("'");
+    public boolean hasCategory(Token<SubStringWithContext> token) {
+        return token.obj.str.equals("'");
     }
 
     @Override
