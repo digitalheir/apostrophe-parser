@@ -16,8 +16,8 @@ import static com.github.digitalheir.tokenizer.Tokenizer.tokenize;
 
 public class ParenthesisParser {
     final static NonTerminal sentence = NonTerminal.of("S");
-    final static NonTerminal openingQuote = NonTerminal.of("Opening quote");
-    final static NonTerminal closingQuote = NonTerminal.of("Closing quote");
+    final static NonTerminal openingQuote = new FancyParenthesis("‘", "Opening '");
+    final static NonTerminal closingQuote = new FancyParenthesis("’", "Closing '");
 
     final static Terminal<SubStringWithContext> anySingleQuote = new SingleQuoteTerminal();
     final static Terminal<SubStringWithContext> singleQuoteAfterSpace = new SpaceQuoteTerminal();
@@ -90,10 +90,8 @@ public class ParenthesisParser {
         } else {
             // We're on a NonTerminal; maybe we should emit a quote
             final Category category = parseTree.category;
-            if (category == openingQuote) {
-                sb.append("‘");
-            } else if (category == closingQuote) {
-                sb.append("’");
+            if (category instanceof FancyParenthesis) {
+                sb.append(((FancyParenthesis) category).replacement);
             } else {
                 // If we're on a non-interesting NonTerminal; recurse into children
                 final List<ParseTree> children = parseTree.children;
