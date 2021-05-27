@@ -1,6 +1,5 @@
 package com.github.digitalheir.tokenizer;
 
-import com.github.digitalheir.SubStringWithContext;
 import org.leibnizcenter.cfg.token.Token;
 
 import java.util.ArrayList;

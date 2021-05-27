@@ -1,6 +1,6 @@
 package com.github.digitalheir.en;
 
-import com.github.digitalheir.SubStringWithContext;
+import com.github.digitalheir.tokenizer.SubStringWithContext;
 import com.github.digitalheir.tokenizer.Tokenizer;
 
 import java.io.BufferedReader;

@@ -1,12 +1,13 @@
-package com.github.digitalheir;
+package com.github.digitalheir.parenthesisparser.category;
 
+import com.github.digitalheir.tokenizer.SubStringWithContext;
 import org.leibnizcenter.cfg.category.terminal.Terminal;
 import org.leibnizcenter.cfg.token.Token;
 
 public class AnyTextTerminal implements Terminal<SubStringWithContext> {
     @Override
     public boolean hasCategory(Token<SubStringWithContext> token) {
-        return true;
+        return true; // catch-all
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.github.digitalheir;
+package com.github.digitalheir.tokenizer;
 
 import com.github.digitalheir.en.KnownPatternTag;
 

@@ -1,5 +1,5 @@
-import com.github.digitalheir.ParenthesisParser;
-import com.github.digitalheir.SubStringWithContext;
+import com.github.digitalheir.parenthesisparser.ParenthesisParser;
+import com.github.digitalheir.tokenizer.SubStringWithContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.leibnizcenter.cfg.token.Token;

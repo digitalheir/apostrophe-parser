@@ -1,5 +1,6 @@
-package com.github.digitalheir;
+package com.github.digitalheir.parenthesisparser.category;
 
+import com.github.digitalheir.tokenizer.SubStringWithContext;
 import org.leibnizcenter.cfg.token.Token;
 
 public class SpaceQuoteTerminal extends SingleQuoteTerminal {

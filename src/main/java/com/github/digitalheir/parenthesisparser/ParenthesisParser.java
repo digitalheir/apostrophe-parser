@@ -1,5 +1,7 @@
-package com.github.digitalheir;
+package com.github.digitalheir.parenthesisparser;
 
+import com.github.digitalheir.parenthesisparser.category.*;
+import com.github.digitalheir.tokenizer.SubStringWithContext;
 import org.leibnizcenter.cfg.category.Category;
 import org.leibnizcenter.cfg.category.nonterminal.NonTerminal;
 import org.leibnizcenter.cfg.category.terminal.Terminal;
@@ -77,19 +79,25 @@ public class ParenthesisParser {
         return sb.toString();
     }
 
+    /**
+     * Walk through the tree, converting parsed quotes ('') to fancy quotes (‘’), while leaving the other text intact
+     */
     private static void convertToFancyQuotes(ParseTree parseTree, StringBuilder sb) {
         if (parseTree instanceof ParseTree.Token) {
+            // We've hit a leaf node; emit the literal text to the StringBuilder
             final String literal = ((SubStringWithContext) ((ParseTree.Token<?>) parseTree).token.obj).str;
             sb.append(literal);
         } else {
-            final List<ParseTree> children = parseTree.children;
-            if (children != null) for (ParseTree childNode : children) {
-                final Category category = childNode.category;
-                if (category == openingQuote) {
-                    sb.append("‘");
-                } else if (category == closingQuote) {
-                    sb.append("’");
-                } else {
+            // We're on a NonTerminal; maybe we should emit a quote
+            final Category category = parseTree.category;
+            if (category == openingQuote) {
+                sb.append("‘");
+            } else if (category == closingQuote) {
+                sb.append("’");
+            } else {
+                // If we're on a non-interesting NonTerminal; recurse into children
+                final List<ParseTree> children = parseTree.children;
+                if (children != null) for (ParseTree childNode : children) {
                     convertToFancyQuotes(childNode, sb);
                 }
             }
