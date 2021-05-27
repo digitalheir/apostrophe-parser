@@ -1,5 +1,13 @@
 `gradle test`
-
+```
+@Test
+public void convertToFancyQuotes() {
+    assertEquals(
+            "‘Hello, I'm here’, she said.",
+            ParenthesisParser.convertToFancyQuotes("'Hello, I'm here', she said.")
+    );
+}
+```
 ### `ParenthesisParser.parse("'ok'")`
 ```
 └── <start>
